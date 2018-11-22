@@ -8,13 +8,17 @@
   <link rel="dns-prefetch" href="http://www.yuedaha.com">
   <title>yudaha</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
+  <meta name="description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
+<meta property="og:type" content="article">
 <meta property="og:title" content="yudaha">
-<meta property="og:url" content="http://www.yuedaha.com/index.html">
+<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/垃圾回收（GC）/index.html">
 <meta property="og:site_name" content="yudaha">
+<meta property="og:description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-26T07:59:39.111Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="yudaha">
+<meta name="twitter:description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
   
     <link rel="alternative" href="/atom.xml" title="yudaha" type="application/atom+xml">
   
@@ -146,146 +150,7 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-字节码" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h1><p><strong>源码编译过程：</strong><br><img src="media/15405487836376/15405514325545.jpg" alt="-w788"></p>
-<p>字节码必须通过类加载过程加载到JVM环境后，才可以执行。执行有三种方式：第一，解释执行；第二，JIT编译执行；第三，JIT编译和解释混合执行（主流JVM默认执行模式）。</p>
-<p>混合模式的优势在于解释器在启动的时候先解释执行，省去了编译时间。随着时间的推进，JVM根据热点代码统计分析，识别高频的方法调用、循环体、公共模块等，基于强大的JIT动态编译技术，将热点代码转换成机器码，直接交给CPU执行。</p>
-<p><strong>简要流程：</strong><br><img src="media/15405487836376/15405524060404.jpg" alt="-w677"></p>
-<h3 id="一、加载或者存储指令"><a href="#一、加载或者存储指令" class="headerlink" title="一、加载或者存储指令"></a>一、加载或者存储指令</h3><p>在某个帧栈中，通过指令操作数据在虚拟机栈的局部变量表和操作栈之间来回传输</p>
-<h4 id="1）将局部变量加载到操作栈中"><a href="#1）将局部变量加载到操作栈中" class="headerlink" title="1）将局部变量加载到操作栈中"></a>1）将局部变量加载到操作栈中</h4><p>iload: 将 int 类型的局部变量压入操作栈<br>aload: 讲对象引用的局部变量压入操作栈</p>
-<h4 id="2）从操作栈顶存储到局部变量表中"><a href="#2）从操作栈顶存储到局部变量表中" class="headerlink" title="2）从操作栈顶存储到局部变量表中"></a>2）从操作栈顶存储到局部变量表中</h4><p>istore、astore</p>
-<h4 id="3）将常量加载到操作栈顶"><a href="#3）将常量加载到操作栈顶" class="headerlink" title="3）将常量加载到操作栈顶"></a>3）将常量加载到操作栈顶</h4><ul>
-<li><strong>iconst</strong>: 加载的是 -1 ~ 5 的数（iconst和bipush的边界）</li>
-<li><strong>bipush</strong>: 即 Byte Immediate PUSH，加载 -128 ~ 127 之间的数</li>
-<li><strong>sipush</strong>: 即 Short Immediate PUSH，加载 -32768 ~ 32787 之间的数</li>
-<li><strong>ldc</strong>: 即 Load Constant，在 -2147483648 ~ 2147783647 或者是字符串时，JVM 采用 LDC 指令压入栈中。</li>
-</ul>
-<h3 id="二、运算指令"><a href="#二、运算指令" class="headerlink" title="二、运算指令"></a>二、运算指令</h3><p>对操作栈上的值进行运行，并把结果写入操作栈顶，如 iadd、imul 等。</p>
-<h3 id="三、类型转换指令"><a href="#三、类型转换指令" class="headerlink" title="三、类型转换指令"></a>三、类型转换指令</h3><p>显示的转换两种不同的数值类型。如 i2l、d2f 等。</p>
-<h3 id="四、对象创建于访问"><a href="#四、对象创建于访问" class="headerlink" title="四、对象创建于访问"></a>四、对象创建于访问</h3><p>根据类进行对象的创建、初始化、方法的调用相关指令</p>
-<h4 id="1）创建对象指令"><a href="#1）创建对象指令" class="headerlink" title="1）创建对象指令"></a>1）创建对象指令</h4><p>new、newarray</p>
-<h4 id="2）访问属性指令"><a href="#2）访问属性指令" class="headerlink" title="2）访问属性指令"></a>2）访问属性指令</h4><p>getfield、putfield、getstatic</p>
-<h4 id="3）检查实例类型指令"><a href="#3）检查实例类型指令" class="headerlink" title="3）检查实例类型指令"></a>3）检查实例类型指令</h4><p>instanceof、checkcast</p>
-<h3 id="五、操作栈管理指令"><a href="#五、操作栈管理指令" class="headerlink" title="五、操作栈管理指令"></a>五、操作栈管理指令</h3><h4 id="1）出栈操作"><a href="#1）出栈操作" class="headerlink" title="1）出栈操作"></a>1）出栈操作</h4><p>pop即一个元素，pop2即两个元素</p>
-<h4 id="2）复制栈顶元素并压入栈"><a href="#2）复制栈顶元素并压入栈" class="headerlink" title="2）复制栈顶元素并压入栈"></a>2）复制栈顶元素并压入栈</h4><p>dup</p>
-<h3 id="六、方法调用与返回指令"><a href="#六、方法调用与返回指令" class="headerlink" title="六、方法调用与返回指令"></a>六、方法调用与返回指令</h3><h4 id="1）调用对象的实例方法"><a href="#1）调用对象的实例方法" class="headerlink" title="1）调用对象的实例方法"></a>1）调用对象的实例方法</h4><p>invokevirtual</p>
-<h4 id="2）调用实例初始化方法、私有方法、父类方法等"><a href="#2）调用实例初始化方法、私有方法、父类方法等" class="headerlink" title="2）调用实例初始化方法、私有方法、父类方法等"></a>2）调用实例初始化方法、私有方法、父类方法等</h4><p>invokespecial</p>
-<h4 id="3）调用类静态方法"><a href="#3）调用类静态方法" class="headerlink" title="3）调用类静态方法"></a>3）调用类静态方法</h4><p>invokestatic</p>
-<h4 id="4）返回void类型"><a href="#4）返回void类型" class="headerlink" title="4）返回void类型"></a>4）返回void类型</h4><p>return</p>
-<h3 id="七、同步指令"><a href="#七、同步指令" class="headerlink" title="七、同步指令"></a>七、同步指令</h3><p>JVM 使用方法结构中的 ACC_SYNCHRONIZED 标志同步方法，指令集中有 MONITORENTER 和 MONITOREXIT 支持 synchronized 语义。</p>
-<p>除了字节码指令外，还包含一些额外的信息。例如：linenumber存储了字节码与源码行号的对应关系，方便调试的时候正确的定位到代码的所在行。localvariable存储当前方法使用到的局部变量表。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/26/字节码/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-对象实例化过程" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="对象实例化过程"><a href="#对象实例化过程" class="headerlink" title="对象实例化过程"></a>对象实例化过程</h1><h3 id="1、字节码角度分析对象创建过程"><a href="#1、字节码角度分析对象创建过程" class="headerlink" title="1、字节码角度分析对象创建过程"></a>1、字节码角度分析对象创建过程</h3><p>通过<code>javap -v -p</code>命令查看对象实例化（<code>Object demo = new Object()</code>）过程：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">  descriptor: ([Ljava/lang/String;)V</span><br><span class="line">  flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">  Code:</span><br><span class="line">    stack=<span class="number">2</span>, locals=<span class="number">2</span>, args_size=<span class="number">1</span></span><br><span class="line">       0: new           #2                  // class java/lang/Object</span><br><span class="line">       <span class="number">3</span>: dup</span><br><span class="line">       4: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">       <span class="number">7</span>: astore_1</span><br><span class="line">       <span class="number">8</span>: <span class="keyword">return</span></span><br><span class="line">    LineNumberTable:</span><br><span class="line">      line <span class="number">13</span>: <span class="number">0</span></span><br><span class="line">      line <span class="number">14</span>: <span class="number">8</span></span><br><span class="line">    LocalVariableTable:</span><br><span class="line">      Start  Length  Slot  Name   Signature</span><br><span class="line">          <span class="number">0</span>       <span class="number">9</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">          <span class="number">8</span>       <span class="number">1</span>     <span class="number">1</span>  demo   Ljava/lang/Object;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><strong>new:</strong> 如果找不到Class对象，则进行类加载。类加载完成后，在堆内存中开辟内存空间，从Object开始到本类路劲上的所有属性都要分配内存（引用也是要占存储空间的，它是一个变量，占4个字节），分配结束后进行零值初始化。讲指向实例对象的引用变量压入虚拟机栈顶。</li>
-<li><strong>dup:</strong> 在栈顶复制改引用变量，这是栈顶会有两个指定堆内的实例对象的应用。如果在<init>方法内有参数，则要讲参数也压入操作栈。栈内相对底部的引用变量用于赋值，或者存储到局部变量表，相对顶部的引用变量是当做句柄来调用相关方法的。</init></li>
-<li><strong>invokespacial:</strong> 调用对象的实例方法，通过栈顶引用变量调用<init>方法。</init></li>
-</ul>
-<blockquote>
-<p><clinit>是类初始化执行的方法，<init>是对象初始化执行的方法。</init></clinit></p>
-</blockquote>
-<h3 id="2、执行步骤角度来分析对象创建过程"><a href="#2、执行步骤角度来分析对象创建过程" class="headerlink" title="2、执行步骤角度来分析对象创建过程"></a>2、执行步骤角度来分析对象创建过程</h3><ul>
-<li><strong>确认元信息是否存在。</strong>当JVM接到new指令时，会从Metaspace内查找需要创建的元信息是否存在。如果不存，则在双亲委派模式下，通过当前类加载器以ClassLoader+包名+类名为key，进行查找对应的.class文件。如果找不到，则报ClassNotFoundException；如果找到则进行类加载，生成Class对象。</li>
-<li><strong>分配对象的内存。</strong>首先会计算对象占空间大小，如果实例的成员变量是引用对象，则只需要分配引用变量空间即可，即4个字节大小，之后在堆中划分一块内存给新的对象。分配内存空间时需要采用同步操作，可以通过CAS失败重试、区域加锁等方式来确保分配内存操作的原子性。</li>
-<li><strong>设定默认值。</strong>给实例对象的成员变量设置默认值，根据类型设置零值。</li>
-<li><strong>设置对象头。</strong>这是新对象的hash值、GC信息、锁信息、对象所有的元信息等。这个过程取决于JVM实现。</li>
-<li><strong>执行init方法。</strong>初始化成员变量，执行实例化代码，调用对象的构造方法，并把堆内存中指向对象的首地址赋值给引用变量。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/19/对象实例化过程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-垃圾回收（GC）" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
+            <article id="post-垃圾回收（GC）" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
@@ -308,6 +173,27 @@
       
 
       
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
     </div>
     <div class="article-info article-info-index">
       
@@ -315,16 +201,84 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/19/垃圾回收（GC）/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/垃圾回收（GC）/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/10/19/对象实例化过程/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/19/类的加载/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title"></div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -344,189 +298,14 @@
 
 
 
+  
+  
+  
 
   
-    <article id="post-类的加载" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h1><p>在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。</p>
-<h3 id="一、类的加载过程"><a href="#一、类的加载过程" class="headerlink" title="一、类的加载过程"></a>一、类的加载过程</h3><p><img src="media/15399334720944/15405435787016.jpg" alt="-w705"></p>
-<p>Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又分为验证、准备和解析。</p>
-<ul>
-<li><strong>加载：</strong>读取类文件转化为二进制流，并转换为特殊的数据结构，初步校验cafe babe魔法字、常量池、文件长度、是否有父类等，然后创建对应的java.lang.Class实例。</li>
-<li><strong>链接：</strong>包括验证、准备和解析三个过程，验证是更加详细的校验，比如final是否合规，类型是否正确，静态变量是否合理等；准备阶段是给静态变量设置默认值，及零值。解析类与类之间相互引用的正确性，完成内存结构布局。</li>
-<li><strong>初始化：</strong>执行类的构造器<clinit>方法，如果赋值运算采用到其他类的静态方法来完成的，则会马上解析另一个类，在虚拟机栈中执行完毕后通过返回结果赋值。</clinit></li>
-</ul>
-<p>类加载过程是对.class字节码实例化成Class对象并进行相关初始化过程。在这个过程中，JVM会初始化继承树上所有未被初始化过程的父类，执行他们的静态代码块和静态变量的赋值操作。</p>
-<blockquote>
-<p>new和Class.newInstance()的区别：new是强类型校验，可以调用任何构造方法，在使用new的时候，这个类可以不需要被加载。newInstance()方法是弱类型校验，只能调用无参构造函数，如果不存在，则报InstantiationException，如果次构造方法没有访问权限，则报IllegalAccessException异常。JDK9中已经把newInstance()置为过时的方法，推荐采用Class.getDeclaredConstructor().newInstance()的方式。</p>
-</blockquote>
-<blockquote>
-<p>还可以通过Class的方法的方式来获取其他声明，例如注解、方法等。在修改private修饰的变量时，设置<code>setAccess(true)</code>即可修改。</p>
-</blockquote>
-<h3 id="二、双亲委派加载模型"><a href="#二、双亲委派加载模型" class="headerlink" title="二、双亲委派加载模型"></a>二、双亲委派加载模型</h3><p>jdk中类加载器分层级关系，最高一层加载器为Bootstrap，由JVM启动时创建，通常是操作系统本地代码实现，是最根基的类加载器，负责加载最核心的类，例如Object、System、String等；第二层在jdk9中，称为Platform ClassLoader（平台加载器），用于加载一些扩展的系统类，比如XML、加密、压缩相关的功能，JDK9之前的加载器为Extension ClassLoader；第三层为Application ClassLoader的应用类加载器，负责加载用户定义的CLASSPATH下面的类。</p>
-<blockquote>
-<p>第二层和第三层是使用java定义的。</p>
-</blockquote>
-<p><img src="media/15399334720944/15405458905092.jpg" alt="-w888"><br>当需要加载一个类时，当前加载器会查看自己是否已经加载此类，如果没有，则向上询问父加载器是否加载此类，如果没有，则依次向上询问是否加载此类型，直到顶级加载器Bootstrap。如果都没有加载过此类，则从顶级加载器开始尝试加载此类，如果无法加载，则依次向下尝试加载，如果都不能加载，则使用当前类加载器加载此类。</p>
-<blockquote>
-<p>低层次的类加载器是不能负载高层次类加载器加载的类</p>
-</blockquote>
-<blockquote>
-<p>Bootstrap加载的路劲是可以追加的，但是不建议修改或是删除原来加载路径。增加JVM启动参数<code>-Xbootclasspath/a:/Users/yuesheng/src</code></p>
-</blockquote>
-<blockquote>
-<p>可以增加<code>-XX:+TraceClassLoading</code>参数查看启动时加载了哪个jar包中的哪个类。在解决类冲突的时候常用。</p>
-</blockquote>
-<blockquote>
-<p>安全性、统一性</p>
-</blockquote>
-<h3 id="三、自定义类加载器"><a href="#三、自定义类加载器" class="headerlink" title="三、自定义类加载器"></a>三、自定义类加载器</h3><h4 id="1、使用场景"><a href="#1、使用场景" class="headerlink" title="1、使用场景"></a>1、使用场景</h4><ul>
-<li><strong>隔离加载类：</strong>在某些框架内进行中间件与应用模块隔离，把类加载到不同环境。比如，通过自定义的类加载器确保应用依赖的jar不会影响中间件依赖的jar包。</li>
-<li><strong>修改类加载方式：</strong>类的加载模型并非强制，除了Bootstrap外，其他的加载并非一定要引入，或者根据情况，在某个时间节点按需进行动态加载。</li>
-<li><strong>扩展加载源：</strong>比如从数据库、网络，甚至是电视机机顶盒中进行加载。</li>
-<li><strong>防止源码泄露：</strong>为了防止Java代码泄露，进行编译加密。那么类的加载器就需要自定义，还原加密的字节码</li>
-</ul>
-<h4 id="2、使用方法"><a href="#2、使用方法" class="headerlink" title="2、使用方法"></a>2、使用方法</h4><p>继承ClassLoader类，重写findClass()方法，调用defineClass()方法。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/19/类的加载/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
 
   
-    <article id="post-内存布局" class="article article-type-post  article-index" itemscope="" itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h1><p><strong>JVM运行时数据区</strong><br><img src="media/15399334427193/15402865652419.jpg" alt="-w2065"></p>
-<p><strong>从线程私有和功效角度来看JVM运行时内存区域机构图</strong><br><img src="media/15399334427193/15405252646960.jpg" alt="-w969"></p>
-<h3 id="1、Heap（堆内存）"><a href="#1、Heap（堆内存）" class="headerlink" title="1、Heap（堆内存）"></a>1、Heap（堆内存）</h3><p>堆区存放着所有的实例对象，由各个子线程共享使用。</p>
-<p>通常情况下它是所有内存区域中占用空间最大的。可通过参数<code>-Xms:1024m</code> <code>-Xmx:1024m</code>设置堆区的内存初始值和最大值。<code>-X</code>代表是JVM运行时参数,<code>ms</code>表示<code>memory start</code>，mx表示<code>memory max</code>。</p>
-<blockquote>
-<p>线上服务设置建议两个值设置为一样大小，防止GC之后调整堆大小时带来额外压力</p>
-</blockquote>
-<p>堆区分为新生代和老年代两大块，对象产生时存入新生代，对象暮年时将进入老年代。新生代无法容纳的超大对象产生时，也将存入老年代。</p>
-<blockquote>
-<p>可通过参数<code>-XX:NewRatio</code>设置新生代和老年代内存大小比例。值为4则代表新生代:年老代=1:4,即新生代占堆内存的1/5。</p>
-</blockquote>
-<p>新生代包含一个Eden区和两个Survivor区。当Eden存满时，会触发YGC。将没有引用到的对象直接回收，激活一个Survivor区（每次只有一个Survivor区处于激活状态），讲存活的对象放入激活的S区内。将Eden区和另一个Survivor区内存全部清空。如果存在Survivor区无法容纳的对象直接进入老年代。</p>
-<blockquote>
-<p>可通过参数<code>-XX:SurvivorRatio</code>这是Eden区和Survivor内存比例。</p>
-</blockquote>
-<p>存活的对象不是一直在Survivor区内，每个对象都会有一个计数器，每次YGC的时候都会增加1。当计数器到达指定的数时还存活，则将此对象移入老年代。默认为15，可以在Survivor区内交换14此。可以通过参数<code>-XX:MaxTenuringThreshold</code>设置大小。</p>
-<p>当新增对象首先在Eden区分配，如果内存不够则会触发YGC。YGC后再次尝试在Eden区内分配空间，如果还是内存不够则会尝试在老年代分配空间。如果老年代内存空间不够，则会触发FGC。FGC之再次尝试在老年代分配内存，如果内存不够则报OOM。简易流程图如下：<br><img src="media/15399334427193/15402899365585.jpg" alt="-w864"></p>
-<h3 id="2、MetaSpace（元空间）"><a href="#2、MetaSpace（元空间）" class="headerlink" title="2、MetaSpace（元空间）"></a>2、MetaSpace（元空间）</h3><p>MetaSpace在jdk1.8及之后划分的区域，他的前身是Perm区（永久代），它是线程共享的内存区域。</p>
-<p>Perm区在启动时固定大小，很难调优。在FGC时，可能会移动类元信息。当动态加载类过多时，会抛出OOM（PermGen space）。因此需要加上启动参数<code>-XX:MaxPermSize=1280m</code>来指定永久代大小。除此之外，永久代在垃圾回收阶段也存在诸多问题。</p>
-<p>在jdk1.8及之后采用元空间替代永久代。区别永久代，元空间是在本地内存中分配。将Perm区的字符串常量池移至堆内存中，其他内容包括类元信息、字段、静态属性、方法、常量等移至元空间。</p>
-<h3 id="3、JVM-Stacks（虚拟机栈）"><a href="#3、JVM-Stacks（虚拟机栈）" class="headerlink" title="3、JVM Stacks（虚拟机栈）"></a>3、JVM Stacks（虚拟机栈）</h3><blockquote>
-<p>栈是一个先进后出的数据结构。</p>
-</blockquote>
-<p>JVM是基于栈结构的运行环境。栈结构移至性更好，可控性更强。JVM中虚拟机栈是描述方法Java方法执行的内存区域，是线程私有的。栈中的元素是用来支持虚拟机进行方法的调用，每个方法从执行开始到执行结束，就是栈帧入栈和出栈的过程。每个活动的线程，只有其虚拟机栈栈顶的栈帧是有效的，称为当前栈栈，运行的方法称为当前方法。在执行引擎运行时，所有的指令只能对当前栈帧有效。栈帧是方法运行的基本结构。</p>
-<p>当虚拟机栈内存不够用时，会报StackOverflowError。</p>
-<p>虚拟机栈通过压栈和出栈的方式，对每个方法的活动栈进行运算处理。当方法正常运行结束会做出栈操作，跳转到另一个方法。当发生异常时，执行异常回溯，通过异常表来找到返回地址。</p>
-<p>每个栈帧内包括：局部变量表、操作栈、动态链接、方法返回地址等</p>
-<h4 id="1）局部变量表"><a href="#1）局部变量表" class="headerlink" title="1）局部变量表"></a>1）局部变量表</h4><p>局部变量表是存在方法的参数和局部变量的区域。相对于类变量的准备阶段和初始化阶段，局部变量是没有准备阶段的，所以局部变量必须显示的初始化。如果方法不是静态方法的话，在index[0]的位置存放方法所属对象的实例引用，之后存储的是方法的参数和局部变量。字节指令码STORE是将操作栈执计算完成的局部变量写会局部变量表。</p>
-<blockquote>
-<p>局部变量表slot从0开始</p>
-</blockquote>
-<h4 id="2）操作栈"><a href="#2）操作栈" class="headerlink" title="2）操作栈"></a>2）操作栈</h4><p>操作栈是一个初始化为空的桶式机构栈。在方法的执行过程中，通过各种指令往栈中写入和去除数据。JVM是的执行引擎是栈结构的执行引擎，这里的栈指的就是方法的操作栈。字节码指令集的定义都是基于栈结构的。栈的深度定义在方法元信息中stack属性中。</p>
-<p>下面是一段java的方法代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">simpleMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">13</span>;</span><br><span class="line">    <span class="keyword">int</span> y = <span class="number">14</span>;</span><br><span class="line">    <span class="keyword">int</span> z = x + y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这是上面代码编译之后通过<code>javap</code>指令得到的解析<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">simpleMethod</span><span class="params">()</span></span>;</span><br><span class="line">   descriptor: ()I</span><br><span class="line">   flags: ACC_PUBLIC</span><br><span class="line">   Code:</span><br><span class="line">     stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span>    <span class="comment">// 栈的深度为2，局部变量表大小为4</span></span><br><span class="line">        <span class="number">0</span>: bipush        <span class="number">13</span>            <span class="comment">// 将常量13压入栈中</span></span><br><span class="line">        <span class="number">2</span>: istore_1                    <span class="comment">// 保存到局部变量表slot_1中</span></span><br><span class="line">        <span class="number">3</span>: bipush        <span class="number">14</span>            <span class="comment">// 将常量14压入栈中</span></span><br><span class="line">        <span class="number">5</span>: istore_2                    <span class="comment">// 保存到局部变量表slot_2中</span></span><br><span class="line">        <span class="number">6</span>: iload_1                     <span class="comment">// 将局部变量表slot_1的值压入栈中</span></span><br><span class="line">        <span class="number">7</span>: iload_2                     <span class="comment">// 将局部变量表slot_2的值压入栈中</span></span><br><span class="line">        <span class="number">8</span>: iadd                        <span class="comment">// 将中元素取出，在cpu中加一下压入栈中</span></span><br><span class="line">        <span class="number">9</span>: istore_3                    <span class="comment">// 保存到局部变量slot_3中</span></span><br><span class="line">       <span class="number">10</span>: iload_3                     <span class="comment">// 讲slot_3中值压入栈中</span></span><br><span class="line">       <span class="number">11</span>: ireturn                     <span class="comment">// 返回栈定元素</span></span><br><span class="line">     LineNumberTable:</span><br><span class="line">       line <span class="number">18</span>: <span class="number">0</span></span><br><span class="line">       line <span class="number">19</span>: <span class="number">3</span></span><br><span class="line">       line <span class="number">20</span>: <span class="number">6</span></span><br><span class="line">       line <span class="number">22</span>: <span class="number">10</span></span><br><span class="line">     LocalVariableTable:   <span class="comment">// 常量表</span></span><br><span class="line">       Start  Length  Slot  Name   Signature</span><br><span class="line">           <span class="number">0</span>      <span class="number">12</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcom/yuesheng/practice/java/Demo; <span class="comment">// 当前方法所属对象的实例引用</span></span><br><span class="line">           <span class="number">3</span>       <span class="number">9</span>     <span class="number">1</span>     x   I</span><br><span class="line">           <span class="number">6</span>       <span class="number">6</span>     <span class="number">2</span>     y   I</span><br><span class="line">          <span class="number">10</span>       <span class="number">2</span>     <span class="number">3</span>     z   I</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>++i 和 i++ 区别（不是原子性操作，是线程不安全的）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a=i++</span></span><br><span class="line"><span class="number">0</span>:iload_1</span><br><span class="line"><span class="number">1</span>:iinc <span class="number">1</span>,<span class="number">1</span></span><br><span class="line"><span class="number">4</span>:istore_2</span><br><span class="line"><span class="comment">// a=++i</span></span><br><span class="line"><span class="number">0</span>:iinc <span class="number">1</span>,<span class="number">1</span></span><br><span class="line"><span class="number">3</span>:iload_1</span><br><span class="line"><span class="number">4</span>:istore_2</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h4 id="3）动态链接"><a href="#3）动态链接" class="headerlink" title="3）动态链接"></a>3）动态链接</h4><p>每个栈帧都包含一个常量池对当前方法的引用，目的是支持方法调用过程中的动态链接</p>
-<h4 id="4）方法返回地址"><a href="#4）方法返回地址" class="headerlink" title="4）方法返回地址"></a>4）方法返回地址</h4><p>方法执行时有两种退出情况：第一，正常退出。就是执行到退出的字节码指令，例如：return，ireturn，areturn等。第二，异常退出。无论哪种退出，都会返回到当前方法被调用的地方。方法的退出的过程相当于当前栈出栈，退出可能有三种：</p>
-<ul>
-<li>将返回值压入上层调用栈</li>
-<li>将异常信息抛给能够处理的栈帧</li>
-<li>PC计数器指向方法调用的下一条指令</li>
-</ul>
-<h3 id="4、Native-Method-Stacks（本地方法栈）"><a href="#4、Native-Method-Stacks（本地方法栈）" class="headerlink" title="4、Native Method Stacks（本地方法栈）"></a>4、Native Method Stacks（本地方法栈）</h3><p>本地方法栈是为Native方法服务的，也是线程私有的。针对JVM来说，虚拟机栈是“主内”，本地方法栈是“主外”。本地方法通过JNI（Java Native Interface）可以访问JVM运行是数据区。</p>
-<p>JNI可以利用系统的特性，重复使用非java代码。当出现内存不足时，会报错native heap OutOfMemory。本地方法报错对于JVM来说是黑盒操作，不方便排错。大量的本地方法出现，会削弱JVM对系统的控制力，也会影响系统的移植能力。</p>
-<p>如果非要用JNI方法，可以使用中间框架，这样即使本地方法崩溃也不会影响到JVM系统。如果要求极高的执行效率和偏底层的夸进程操作，也可以考虑设计JNI调用方式。</p>
-<h3 id="5、Program-Counter-Register（程序计数寄存器）"><a href="#5、Program-Counter-Register（程序计数寄存器）" class="headerlink" title="5、Program Counter Register（程序计数寄存器）"></a>5、Program Counter Register（程序计数寄存器）</h3><p>程序计数寄存器是源于CPU寄存器的，CPU只有将数据装载到寄存器内才能执行。CPU是通过分配之间偏来执行线程的，当确定的某一个时刻，一个处理器或者多核CPU中的一个核只能执行某个线程的一个指令。线程为了保证下次正确的执行，会在创建的时候，会产生自己的程序计数器用来存储当前执行的指令的偏移量和行号等，线程执行或恢复都是靠程序计数寄存器。此区域是线程私有的，也是唯一不会发生内存溢出的。</p>
 
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/19/内存布局/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
 
 
@@ -549,8 +328,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
