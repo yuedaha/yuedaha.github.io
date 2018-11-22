@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="jvm,gc,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
+<meta name="description" content="Java中GC的基本介绍">
+<meta name="keywords" content="jvm,gc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="yudaha">
-<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/gc/index.html">
+<meta property="og:title" content="gc">
+<meta property="og:url" content="http://www.yuedaha.com/2018/11/22/gc/index.html">
 <meta property="og:site_name" content="yudaha">
-<meta property="og:description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
+<meta property="og:description" content="Java中GC的基本介绍">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-26T07:59:39.111Z">
+<meta property="og:updated_time" content="2018-11-22T11:29:47.667Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="yudaha">
-<meta name="twitter:description" content="垃圾回收（GC）Java对内存进行自动分配和回收管理，使上层业务更加安全，方便的使用内存来实现程序逻辑。在不同的JVM实现及回收机制中，对堆内存的划分也不同。JVM的垃圾回收是回收不再使用的对象，自动释放内存。 为了判断哪些对象是不再使用的对象，JVM引入了GC Roots。如果一个对象和GC Roots之间没有直接引用或间接引用关系，例如某个失去任何引用的对象，或者两个对象之间循环引用。这些对象">
+<meta name="twitter:title" content="gc">
+<meta name="twitter:description" content="Java中GC的基本介绍">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://www.yuedaha.com/2018/10/19/gc/">
+  <link rel="canonical" href="http://www.yuedaha.com/2018/11/22/gc/">
 
 
 
 
 
-  <title> | yudaha</title>
+  <title>gc | yudaha</title>
   
 
 
@@ -232,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.yuedaha.com/2018/10/19/gc/">
+    <link itemprop="mainEntityOfPage" href="http://www.yuedaha.com/2018/11/22/gc/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yuedaha">
@@ -249,7 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">gc</h1>
         
 
         <div class="post-meta">
@@ -261,8 +262,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-19T15:19:13+08:00">
-                2018-10-19
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-22T19:26:31+08:00">
+                2018-11-22
               </time>
             
 
@@ -272,6 +273,28 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index">
+                    <span itemprop="name">jvm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -284,6 +307,10 @@
 
           
 
+          
+              <div class="post-description">
+                  Java中GC的基本介绍
+              </div>
           
 
         </div>
@@ -328,31 +355,19 @@
 
     <footer class="post-footer">
       
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2018/10/19/classloader/" rel="next" title="">
-                <i class="fa fa-chevron-left"></i> 
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/19/Object instantiation process/" rel="prev" title="">
-                 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
+        <div class="post-tags">
+          
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+            <a href="/tags/gc/" rel="tag"># gc</a>
+          
         </div>
+      
+
+      
+      
+      
+
       
 
       
@@ -426,14 +441,32 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
             
 
           </nav>
