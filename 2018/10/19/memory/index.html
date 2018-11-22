@@ -8,17 +8,21 @@
   <link rel="dns-prefetch" href="http://www.yuedaha.com">
   <title>yudaha</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
+  <meta name="description" content="内存布局JVM运行时数据区 从线程私有和功效角度来看JVM运行时内存区域机构图 1、Heap（堆内存）堆区存放着所有的实例对象，由各个子线程共享使用。 通常情况下它是所有内存区域中占用空间最大的。可通过参数-Xms:1024m -Xmx:1024m设置堆区的内存初始值和最大值。-X代表是JVM运行时参数,ms表示memory start，mx表示memory max。  线上服务设置建议两个值设置">
 <meta property="og:type" content="article">
 <meta property="og:title" content="yudaha">
-<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/对象实例化过程/index.html">
+<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/memory/index.html">
 <meta property="og:site_name" content="yudaha">
-<meta property="og:description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
+<meta property="og:description" content="内存布局JVM运行时数据区 从线程私有和功效角度来看JVM运行时内存区域机构图 1、Heap（堆内存）堆区存放着所有的实例对象，由各个子线程共享使用。 通常情况下它是所有内存区域中占用空间最大的。可通过参数-Xms:1024m -Xmx:1024m设置堆区的内存初始值和最大值。-X代表是JVM运行时参数,ms表示memory start，mx表示memory max。  线上服务设置建议两个值设置">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-26T04:26:23.658Z">
+<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/memory/media/15399334427193/15402865652419.jpg">
+<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/memory/media/15399334427193/15405252646960.jpg">
+<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/memory/media/15399334427193/15402899365585.jpg">
+<meta property="og:updated_time" content="2018-10-26T03:41:12.032Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="yudaha">
-<meta name="twitter:description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
+<meta name="twitter:description" content="内存布局JVM运行时数据区 从线程私有和功效角度来看JVM运行时内存区域机构图 1、Heap（堆内存）堆区存放着所有的实例对象，由各个子线程共享使用。 通常情况下它是所有内存区域中占用空间最大的。可通过参数-Xms:1024m -Xmx:1024m设置堆区的内存初始值和最大值。-X代表是JVM运行时参数,ms表示memory start，mx表示memory max。  线上服务设置建议两个值设置">
+<meta name="twitter:image" content="http://www.yuedaha.com/2018/10/19/memory/media/15399334427193/15402865652419.jpg">
   
     <link rel="alternative" href="/atom.xml" title="yudaha" type="application/atom+xml">
   
@@ -150,27 +154,59 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-对象实例化过程" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-memory" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="对象实例化过程"><a href="#对象实例化过程" class="headerlink" title="对象实例化过程"></a>对象实例化过程</h1><h3 id="1、字节码角度分析对象创建过程"><a href="#1、字节码角度分析对象创建过程" class="headerlink" title="1、字节码角度分析对象创建过程"></a>1、字节码角度分析对象创建过程</h3><p>通过<code>javap -v -p</code>命令查看对象实例化（<code>Object demo = new Object()</code>）过程：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">  descriptor: ([Ljava/lang/String;)V</span><br><span class="line">  flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">  Code:</span><br><span class="line">    stack=<span class="number">2</span>, locals=<span class="number">2</span>, args_size=<span class="number">1</span></span><br><span class="line">       0: new           #2                  // class java/lang/Object</span><br><span class="line">       <span class="number">3</span>: dup</span><br><span class="line">       4: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">       <span class="number">7</span>: astore_1</span><br><span class="line">       <span class="number">8</span>: <span class="keyword">return</span></span><br><span class="line">    LineNumberTable:</span><br><span class="line">      line <span class="number">13</span>: <span class="number">0</span></span><br><span class="line">      line <span class="number">14</span>: <span class="number">8</span></span><br><span class="line">    LocalVariableTable:</span><br><span class="line">      Start  Length  Slot  Name   Signature</span><br><span class="line">          <span class="number">0</span>       <span class="number">9</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">          <span class="number">8</span>       <span class="number">1</span>     <span class="number">1</span>  demo   Ljava/lang/Object;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><strong>new:</strong> 如果找不到Class对象，则进行类加载。类加载完成后，在堆内存中开辟内存空间，从Object开始到本类路劲上的所有属性都要分配内存（引用也是要占存储空间的，它是一个变量，占4个字节），分配结束后进行零值初始化。讲指向实例对象的引用变量压入虚拟机栈顶。</li>
-<li><strong>dup:</strong> 在栈顶复制改引用变量，这是栈顶会有两个指定堆内的实例对象的应用。如果在<init>方法内有参数，则要讲参数也压入操作栈。栈内相对底部的引用变量用于赋值，或者存储到局部变量表，相对顶部的引用变量是当做句柄来调用相关方法的。</init></li>
-<li><strong>invokespacial:</strong> 调用对象的实例方法，通过栈顶引用变量调用<init>方法。</init></li>
-</ul>
+        <h1 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h1><p><strong>JVM运行时数据区</strong><br><img src="media/15399334427193/15402865652419.jpg" alt="-w2065"></p>
+<p><strong>从线程私有和功效角度来看JVM运行时内存区域机构图</strong><br><img src="media/15399334427193/15405252646960.jpg" alt="-w969"></p>
+<h3 id="1、Heap（堆内存）"><a href="#1、Heap（堆内存）" class="headerlink" title="1、Heap（堆内存）"></a>1、Heap（堆内存）</h3><p>堆区存放着所有的实例对象，由各个子线程共享使用。</p>
+<p>通常情况下它是所有内存区域中占用空间最大的。可通过参数<code>-Xms:1024m</code> <code>-Xmx:1024m</code>设置堆区的内存初始值和最大值。<code>-X</code>代表是JVM运行时参数,<code>ms</code>表示<code>memory start</code>，mx表示<code>memory max</code>。</p>
 <blockquote>
-<p><clinit>是类初始化执行的方法，<init>是对象初始化执行的方法。</init></clinit></p>
+<p>线上服务设置建议两个值设置为一样大小，防止GC之后调整堆大小时带来额外压力</p>
 </blockquote>
-<h3 id="2、执行步骤角度来分析对象创建过程"><a href="#2、执行步骤角度来分析对象创建过程" class="headerlink" title="2、执行步骤角度来分析对象创建过程"></a>2、执行步骤角度来分析对象创建过程</h3><ul>
-<li><strong>确认元信息是否存在。</strong>当JVM接到new指令时，会从Metaspace内查找需要创建的元信息是否存在。如果不存，则在双亲委派模式下，通过当前类加载器以ClassLoader+包名+类名为key，进行查找对应的.class文件。如果找不到，则报ClassNotFoundException；如果找到则进行类加载，生成Class对象。</li>
-<li><strong>分配对象的内存。</strong>首先会计算对象占空间大小，如果实例的成员变量是引用对象，则只需要分配引用变量空间即可，即4个字节大小，之后在堆中划分一块内存给新的对象。分配内存空间时需要采用同步操作，可以通过CAS失败重试、区域加锁等方式来确保分配内存操作的原子性。</li>
-<li><strong>设定默认值。</strong>给实例对象的成员变量设置默认值，根据类型设置零值。</li>
-<li><strong>设置对象头。</strong>这是新对象的hash值、GC信息、锁信息、对象所有的元信息等。这个过程取决于JVM实现。</li>
-<li><strong>执行init方法。</strong>初始化成员变量，执行实例化代码，调用对象的构造方法，并把堆内存中指向对象的首地址赋值给引用变量。</li>
+<p>堆区分为新生代和老年代两大块，对象产生时存入新生代，对象暮年时将进入老年代。新生代无法容纳的超大对象产生时，也将存入老年代。</p>
+<blockquote>
+<p>可通过参数<code>-XX:NewRatio</code>设置新生代和老年代内存大小比例。值为4则代表新生代:年老代=1:4,即新生代占堆内存的1/5。</p>
+</blockquote>
+<p>新生代包含一个Eden区和两个Survivor区。当Eden存满时，会触发YGC。将没有引用到的对象直接回收，激活一个Survivor区（每次只有一个Survivor区处于激活状态），讲存活的对象放入激活的S区内。将Eden区和另一个Survivor区内存全部清空。如果存在Survivor区无法容纳的对象直接进入老年代。</p>
+<blockquote>
+<p>可通过参数<code>-XX:SurvivorRatio</code>这是Eden区和Survivor内存比例。</p>
+</blockquote>
+<p>存活的对象不是一直在Survivor区内，每个对象都会有一个计数器，每次YGC的时候都会增加1。当计数器到达指定的数时还存活，则将此对象移入老年代。默认为15，可以在Survivor区内交换14此。可以通过参数<code>-XX:MaxTenuringThreshold</code>设置大小。</p>
+<p>当新增对象首先在Eden区分配，如果内存不够则会触发YGC。YGC后再次尝试在Eden区内分配空间，如果还是内存不够则会尝试在老年代分配空间。如果老年代内存空间不够，则会触发FGC。FGC之再次尝试在老年代分配内存，如果内存不够则报OOM。简易流程图如下：<br><img src="media/15399334427193/15402899365585.jpg" alt="-w864"></p>
+<h3 id="2、MetaSpace（元空间）"><a href="#2、MetaSpace（元空间）" class="headerlink" title="2、MetaSpace（元空间）"></a>2、MetaSpace（元空间）</h3><p>MetaSpace在jdk1.8及之后划分的区域，他的前身是Perm区（永久代），它是线程共享的内存区域。</p>
+<p>Perm区在启动时固定大小，很难调优。在FGC时，可能会移动类元信息。当动态加载类过多时，会抛出OOM（PermGen space）。因此需要加上启动参数<code>-XX:MaxPermSize=1280m</code>来指定永久代大小。除此之外，永久代在垃圾回收阶段也存在诸多问题。</p>
+<p>在jdk1.8及之后采用元空间替代永久代。区别永久代，元空间是在本地内存中分配。将Perm区的字符串常量池移至堆内存中，其他内容包括类元信息、字段、静态属性、方法、常量等移至元空间。</p>
+<h3 id="3、JVM-Stacks（虚拟机栈）"><a href="#3、JVM-Stacks（虚拟机栈）" class="headerlink" title="3、JVM Stacks（虚拟机栈）"></a>3、JVM Stacks（虚拟机栈）</h3><blockquote>
+<p>栈是一个先进后出的数据结构。</p>
+</blockquote>
+<p>JVM是基于栈结构的运行环境。栈结构移至性更好，可控性更强。JVM中虚拟机栈是描述方法Java方法执行的内存区域，是线程私有的。栈中的元素是用来支持虚拟机进行方法的调用，每个方法从执行开始到执行结束，就是栈帧入栈和出栈的过程。每个活动的线程，只有其虚拟机栈栈顶的栈帧是有效的，称为当前栈栈，运行的方法称为当前方法。在执行引擎运行时，所有的指令只能对当前栈帧有效。栈帧是方法运行的基本结构。</p>
+<p>当虚拟机栈内存不够用时，会报StackOverflowError。</p>
+<p>虚拟机栈通过压栈和出栈的方式，对每个方法的活动栈进行运算处理。当方法正常运行结束会做出栈操作，跳转到另一个方法。当发生异常时，执行异常回溯，通过异常表来找到返回地址。</p>
+<p>每个栈帧内包括：局部变量表、操作栈、动态链接、方法返回地址等</p>
+<h4 id="1）局部变量表"><a href="#1）局部变量表" class="headerlink" title="1）局部变量表"></a>1）局部变量表</h4><p>局部变量表是存在方法的参数和局部变量的区域。相对于类变量的准备阶段和初始化阶段，局部变量是没有准备阶段的，所以局部变量必须显示的初始化。如果方法不是静态方法的话，在index[0]的位置存放方法所属对象的实例引用，之后存储的是方法的参数和局部变量。字节指令码STORE是将操作栈执计算完成的局部变量写会局部变量表。</p>
+<blockquote>
+<p>局部变量表slot从0开始</p>
+</blockquote>
+<h4 id="2）操作栈"><a href="#2）操作栈" class="headerlink" title="2）操作栈"></a>2）操作栈</h4><p>操作栈是一个初始化为空的桶式机构栈。在方法的执行过程中，通过各种指令往栈中写入和去除数据。JVM是的执行引擎是栈结构的执行引擎，这里的栈指的就是方法的操作栈。字节码指令集的定义都是基于栈结构的。栈的深度定义在方法元信息中stack属性中。</p>
+<p>下面是一段java的方法代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">simpleMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">13</span>;</span><br><span class="line">    <span class="keyword">int</span> y = <span class="number">14</span>;</span><br><span class="line">    <span class="keyword">int</span> z = x + y;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> z;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这是上面代码编译之后通过<code>javap</code>指令得到的解析<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">simpleMethod</span><span class="params">()</span></span>;</span><br><span class="line">   descriptor: ()I</span><br><span class="line">   flags: ACC_PUBLIC</span><br><span class="line">   Code:</span><br><span class="line">     stack=<span class="number">2</span>, locals=<span class="number">4</span>, args_size=<span class="number">1</span>    <span class="comment">// 栈的深度为2，局部变量表大小为4</span></span><br><span class="line">        <span class="number">0</span>: bipush        <span class="number">13</span>            <span class="comment">// 将常量13压入栈中</span></span><br><span class="line">        <span class="number">2</span>: istore_1                    <span class="comment">// 保存到局部变量表slot_1中</span></span><br><span class="line">        <span class="number">3</span>: bipush        <span class="number">14</span>            <span class="comment">// 将常量14压入栈中</span></span><br><span class="line">        <span class="number">5</span>: istore_2                    <span class="comment">// 保存到局部变量表slot_2中</span></span><br><span class="line">        <span class="number">6</span>: iload_1                     <span class="comment">// 将局部变量表slot_1的值压入栈中</span></span><br><span class="line">        <span class="number">7</span>: iload_2                     <span class="comment">// 将局部变量表slot_2的值压入栈中</span></span><br><span class="line">        <span class="number">8</span>: iadd                        <span class="comment">// 将中元素取出，在cpu中加一下压入栈中</span></span><br><span class="line">        <span class="number">9</span>: istore_3                    <span class="comment">// 保存到局部变量slot_3中</span></span><br><span class="line">       <span class="number">10</span>: iload_3                     <span class="comment">// 讲slot_3中值压入栈中</span></span><br><span class="line">       <span class="number">11</span>: ireturn                     <span class="comment">// 返回栈定元素</span></span><br><span class="line">     LineNumberTable:</span><br><span class="line">       line <span class="number">18</span>: <span class="number">0</span></span><br><span class="line">       line <span class="number">19</span>: <span class="number">3</span></span><br><span class="line">       line <span class="number">20</span>: <span class="number">6</span></span><br><span class="line">       line <span class="number">22</span>: <span class="number">10</span></span><br><span class="line">     LocalVariableTable:   <span class="comment">// 常量表</span></span><br><span class="line">       Start  Length  Slot  Name   Signature</span><br><span class="line">           <span class="number">0</span>      <span class="number">12</span>     <span class="number">0</span>  <span class="keyword">this</span>   Lcom/yuesheng/practice/java/Demo; <span class="comment">// 当前方法所属对象的实例引用</span></span><br><span class="line">           <span class="number">3</span>       <span class="number">9</span>     <span class="number">1</span>     x   I</span><br><span class="line">           <span class="number">6</span>       <span class="number">6</span>     <span class="number">2</span>     y   I</span><br><span class="line">          <span class="number">10</span>       <span class="number">2</span>     <span class="number">3</span>     z   I</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>++i 和 i++ 区别（不是原子性操作，是线程不安全的）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a=i++</span></span><br><span class="line"><span class="number">0</span>:iload_1</span><br><span class="line"><span class="number">1</span>:iinc <span class="number">1</span>,<span class="number">1</span></span><br><span class="line"><span class="number">4</span>:istore_2</span><br><span class="line"><span class="comment">// a=++i</span></span><br><span class="line"><span class="number">0</span>:iinc <span class="number">1</span>,<span class="number">1</span></span><br><span class="line"><span class="number">3</span>:iload_1</span><br><span class="line"><span class="number">4</span>:istore_2</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h4 id="3）动态链接"><a href="#3）动态链接" class="headerlink" title="3）动态链接"></a>3）动态链接</h4><p>每个栈帧都包含一个常量池对当前方法的引用，目的是支持方法调用过程中的动态链接</p>
+<h4 id="4）方法返回地址"><a href="#4）方法返回地址" class="headerlink" title="4）方法返回地址"></a>4）方法返回地址</h4><p>方法执行时有两种退出情况：第一，正常退出。就是执行到退出的字节码指令，例如：return，ireturn，areturn等。第二，异常退出。无论哪种退出，都会返回到当前方法被调用的地方。方法的退出的过程相当于当前栈出栈，退出可能有三种：</p>
+<ul>
+<li>将返回值压入上层调用栈</li>
+<li>将异常信息抛给能够处理的栈帧</li>
+<li>PC计数器指向方法调用的下一条指令</li>
 </ul>
+<h3 id="4、Native-Method-Stacks（本地方法栈）"><a href="#4、Native-Method-Stacks（本地方法栈）" class="headerlink" title="4、Native Method Stacks（本地方法栈）"></a>4、Native Method Stacks（本地方法栈）</h3><p>本地方法栈是为Native方法服务的，也是线程私有的。针对JVM来说，虚拟机栈是“主内”，本地方法栈是“主外”。本地方法通过JNI（Java Native Interface）可以访问JVM运行是数据区。</p>
+<p>JNI可以利用系统的特性，重复使用非java代码。当出现内存不足时，会报错native heap OutOfMemory。本地方法报错对于JVM来说是黑盒操作，不方便排错。大量的本地方法出现，会削弱JVM对系统的控制力，也会影响系统的移植能力。</p>
+<p>如果非要用JNI方法，可以使用中间框架，这样即使本地方法崩溃也不会影响到JVM系统。如果要求极高的执行效率和偏底层的夸进程操作，也可以考虑设计JNI调用方式。</p>
+<h3 id="5、Program-Counter-Register（程序计数寄存器）"><a href="#5、Program-Counter-Register（程序计数寄存器）" class="headerlink" title="5、Program Counter Register（程序计数寄存器）"></a>5、Program Counter Register（程序计数寄存器）</h3><p>程序计数寄存器是源于CPU寄存器的，CPU只有将数据装载到寄存器内才能执行。CPU是通过分配之间偏来执行线程的，当确定的某一个时刻，一个处理器或者多核CPU中的一个核只能执行某个线程的一个指令。线程为了保证下次正确的执行，会在创建的时候，会产生自己的程序计数器用来存储当前执行的指令的偏移量和行号等，线程执行或恢复都是靠程序计数寄存器。此区域是线程私有的，也是唯一不会发生内存溢出的。</p>
 
       
 
@@ -250,7 +286,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/对象实例化过程/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/memory/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -264,7 +300,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/26/字节码/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/19/classloader/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -273,11 +309,6 @@
       </div>
     </a>
   
-  
-    <a href="/2018/10/19/垃圾回收（GC）/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title"></div>
-      <i class="icon-circle-right"></i>
-    </a>
   
 </nav>
 

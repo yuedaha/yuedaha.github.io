@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://www.yuedaha.com">
   <title>yudaha</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="字节码源码编译过程： 字节码必须通过类加载过程加载到JVM环境后，才可以执行。执行有三种方式：第一，解释执行；第二，JIT编译执行；第三，JIT编译和解释混合执行（主流JVM默认执行模式）。 混合模式的优势在于解释器在启动的时候先解释执行，省去了编译时间。随着时间的推进，JVM根据热点代码统计分析，识别高频的方法调用、循环体、公共模块等，基于强大的JIT动态编译技术，将热点代码转换成机器码，直接交">
+  <meta name="description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
 <meta property="og:type" content="article">
 <meta property="og:title" content="yudaha">
-<meta property="og:url" content="http://www.yuedaha.com/2018/10/26/字节码/index.html">
+<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/classloader/index.html">
 <meta property="og:site_name" content="yudaha">
-<meta property="og:description" content="字节码源码编译过程： 字节码必须通过类加载过程加载到JVM环境后，才可以执行。执行有三种方式：第一，解释执行；第二，JIT编译执行；第三，JIT编译和解释混合执行（主流JVM默认执行模式）。 混合模式的优势在于解释器在启动的时候先解释执行，省去了编译时间。随着时间的推进，JVM根据热点代码统计分析，识别高频的方法调用、循环体、公共模块等，基于强大的JIT动态编译技术，将热点代码转换成机器码，直接交">
+<meta property="og:description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://www.yuedaha.com/2018/10/26/字节码/media/15405487836376/15405514325545.jpg">
-<meta property="og:image" content="http://www.yuedaha.com/2018/10/26/字节码/media/15405487836376/15405524060404.jpg">
-<meta property="og:updated_time" content="2018-10-26T11:14:31.696Z">
+<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/classloader/media/15399334720944/15405435787016.jpg">
+<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/classloader/media/15399334720944/15405458905092.jpg">
+<meta property="og:updated_time" content="2018-11-01T08:03:37.214Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="yudaha">
-<meta name="twitter:description" content="字节码源码编译过程： 字节码必须通过类加载过程加载到JVM环境后，才可以执行。执行有三种方式：第一，解释执行；第二，JIT编译执行；第三，JIT编译和解释混合执行（主流JVM默认执行模式）。 混合模式的优势在于解释器在启动的时候先解释执行，省去了编译时间。随着时间的推进，JVM根据热点代码统计分析，识别高频的方法调用、循环体、公共模块等，基于强大的JIT动态编译技术，将热点代码转换成机器码，直接交">
-<meta name="twitter:image" content="http://www.yuedaha.com/2018/10/26/字节码/media/15405487836376/15405514325545.jpg">
+<meta name="twitter:description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
+<meta name="twitter:image" content="http://www.yuedaha.com/2018/10/19/classloader/media/15399334720944/15405435787016.jpg">
   
     <link rel="alternative" href="/atom.xml" title="yudaha" type="application/atom+xml">
   
@@ -153,38 +153,50 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-字节码" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-classloader" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h1><p><strong>源码编译过程：</strong><br><img src="media/15405487836376/15405514325545.jpg" alt="-w788"></p>
-<p>字节码必须通过类加载过程加载到JVM环境后，才可以执行。执行有三种方式：第一，解释执行；第二，JIT编译执行；第三，JIT编译和解释混合执行（主流JVM默认执行模式）。</p>
-<p>混合模式的优势在于解释器在启动的时候先解释执行，省去了编译时间。随着时间的推进，JVM根据热点代码统计分析，识别高频的方法调用、循环体、公共模块等，基于强大的JIT动态编译技术，将热点代码转换成机器码，直接交给CPU执行。</p>
-<p><strong>简要流程：</strong><br><img src="media/15405487836376/15405524060404.jpg" alt="-w677"></p>
-<h3 id="一、加载或者存储指令"><a href="#一、加载或者存储指令" class="headerlink" title="一、加载或者存储指令"></a>一、加载或者存储指令</h3><p>在某个帧栈中，通过指令操作数据在虚拟机栈的局部变量表和操作栈之间来回传输</p>
-<h4 id="1）将局部变量加载到操作栈中"><a href="#1）将局部变量加载到操作栈中" class="headerlink" title="1）将局部变量加载到操作栈中"></a>1）将局部变量加载到操作栈中</h4><p>iload: 将 int 类型的局部变量压入操作栈<br>aload: 讲对象引用的局部变量压入操作栈</p>
-<h4 id="2）从操作栈顶存储到局部变量表中"><a href="#2）从操作栈顶存储到局部变量表中" class="headerlink" title="2）从操作栈顶存储到局部变量表中"></a>2）从操作栈顶存储到局部变量表中</h4><p>istore、astore</p>
-<h4 id="3）将常量加载到操作栈顶"><a href="#3）将常量加载到操作栈顶" class="headerlink" title="3）将常量加载到操作栈顶"></a>3）将常量加载到操作栈顶</h4><ul>
-<li><strong>iconst</strong>: 加载的是 -1 ~ 5 的数（iconst和bipush的边界）</li>
-<li><strong>bipush</strong>: 即 Byte Immediate PUSH，加载 -128 ~ 127 之间的数</li>
-<li><strong>sipush</strong>: 即 Short Immediate PUSH，加载 -32768 ~ 32787 之间的数</li>
-<li><strong>ldc</strong>: 即 Load Constant，在 -2147483648 ~ 2147783647 或者是字符串时，JVM 采用 LDC 指令压入栈中。</li>
+        <h1 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h1><p>在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。</p>
+<h3 id="一、类的加载过程"><a href="#一、类的加载过程" class="headerlink" title="一、类的加载过程"></a>一、类的加载过程</h3><p><img src="media/15399334720944/15405435787016.jpg" alt="-w705"></p>
+<p>Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又分为验证、准备和解析。</p>
+<ul>
+<li><strong>加载：</strong>读取类文件转化为二进制流，并转换为特殊的数据结构，初步校验cafe babe魔法字、常量池、文件长度、是否有父类等，然后创建对应的java.lang.Class实例。</li>
+<li><strong>链接：</strong>包括验证、准备和解析三个过程，验证是更加详细的校验，比如final是否合规，类型是否正确，静态变量是否合理等；准备阶段是给静态变量设置默认值，及零值。解析类与类之间相互引用的正确性，完成内存结构布局。</li>
+<li><strong>初始化：</strong>执行类的构造器<clinit>方法，如果赋值运算采用到其他类的静态方法来完成的，则会马上解析另一个类，在虚拟机栈中执行完毕后通过返回结果赋值。</clinit></li>
 </ul>
-<h3 id="二、运算指令"><a href="#二、运算指令" class="headerlink" title="二、运算指令"></a>二、运算指令</h3><p>对操作栈上的值进行运行，并把结果写入操作栈顶，如 iadd、imul 等。</p>
-<h3 id="三、类型转换指令"><a href="#三、类型转换指令" class="headerlink" title="三、类型转换指令"></a>三、类型转换指令</h3><p>显示的转换两种不同的数值类型。如 i2l、d2f 等。</p>
-<h3 id="四、对象创建于访问"><a href="#四、对象创建于访问" class="headerlink" title="四、对象创建于访问"></a>四、对象创建于访问</h3><p>根据类进行对象的创建、初始化、方法的调用相关指令</p>
-<h4 id="1）创建对象指令"><a href="#1）创建对象指令" class="headerlink" title="1）创建对象指令"></a>1）创建对象指令</h4><p>new、newarray</p>
-<h4 id="2）访问属性指令"><a href="#2）访问属性指令" class="headerlink" title="2）访问属性指令"></a>2）访问属性指令</h4><p>getfield、putfield、getstatic</p>
-<h4 id="3）检查实例类型指令"><a href="#3）检查实例类型指令" class="headerlink" title="3）检查实例类型指令"></a>3）检查实例类型指令</h4><p>instanceof、checkcast</p>
-<h3 id="五、操作栈管理指令"><a href="#五、操作栈管理指令" class="headerlink" title="五、操作栈管理指令"></a>五、操作栈管理指令</h3><h4 id="1）出栈操作"><a href="#1）出栈操作" class="headerlink" title="1）出栈操作"></a>1）出栈操作</h4><p>pop即一个元素，pop2即两个元素</p>
-<h4 id="2）复制栈顶元素并压入栈"><a href="#2）复制栈顶元素并压入栈" class="headerlink" title="2）复制栈顶元素并压入栈"></a>2）复制栈顶元素并压入栈</h4><p>dup</p>
-<h3 id="六、方法调用与返回指令"><a href="#六、方法调用与返回指令" class="headerlink" title="六、方法调用与返回指令"></a>六、方法调用与返回指令</h3><h4 id="1）调用对象的实例方法"><a href="#1）调用对象的实例方法" class="headerlink" title="1）调用对象的实例方法"></a>1）调用对象的实例方法</h4><p>invokevirtual</p>
-<h4 id="2）调用实例初始化方法、私有方法、父类方法等"><a href="#2）调用实例初始化方法、私有方法、父类方法等" class="headerlink" title="2）调用实例初始化方法、私有方法、父类方法等"></a>2）调用实例初始化方法、私有方法、父类方法等</h4><p>invokespecial</p>
-<h4 id="3）调用类静态方法"><a href="#3）调用类静态方法" class="headerlink" title="3）调用类静态方法"></a>3）调用类静态方法</h4><p>invokestatic</p>
-<h4 id="4）返回void类型"><a href="#4）返回void类型" class="headerlink" title="4）返回void类型"></a>4）返回void类型</h4><p>return</p>
-<h3 id="七、同步指令"><a href="#七、同步指令" class="headerlink" title="七、同步指令"></a>七、同步指令</h3><p>JVM 使用方法结构中的 ACC_SYNCHRONIZED 标志同步方法，指令集中有 MONITORENTER 和 MONITOREXIT 支持 synchronized 语义。</p>
-<p>除了字节码指令外，还包含一些额外的信息。例如：linenumber存储了字节码与源码行号的对应关系，方便调试的时候正确的定位到代码的所在行。localvariable存储当前方法使用到的局部变量表。</p>
+<p>类加载过程是对.class字节码实例化成Class对象并进行相关初始化过程。在这个过程中，JVM会初始化继承树上所有未被初始化过程的父类，执行他们的静态代码块和静态变量的赋值操作。</p>
+<blockquote>
+<p>new和Class.newInstance()的区别：new是强类型校验，可以调用任何构造方法，在使用new的时候，这个类可以不需要被加载。newInstance()方法是弱类型校验，只能调用无参构造函数，如果不存在，则报InstantiationException，如果次构造方法没有访问权限，则报IllegalAccessException异常。JDK9中已经把newInstance()置为过时的方法，推荐采用Class.getDeclaredConstructor().newInstance()的方式。</p>
+</blockquote>
+<blockquote>
+<p>还可以通过Class的方法的方式来获取其他声明，例如注解、方法等。在修改private修饰的变量时，设置<code>setAccess(true)</code>即可修改。</p>
+</blockquote>
+<h3 id="二、双亲委派加载模型"><a href="#二、双亲委派加载模型" class="headerlink" title="二、双亲委派加载模型"></a>二、双亲委派加载模型</h3><p>jdk中类加载器分层级关系，最高一层加载器为Bootstrap，由JVM启动时创建，通常是操作系统本地代码实现，是最根基的类加载器，负责加载最核心的类，例如Object、System、String等；第二层在jdk9中，称为Platform ClassLoader（平台加载器），用于加载一些扩展的系统类，比如XML、加密、压缩相关的功能，JDK9之前的加载器为Extension ClassLoader；第三层为Application ClassLoader的应用类加载器，负责加载用户定义的CLASSPATH下面的类。</p>
+<blockquote>
+<p>第二层和第三层是使用java定义的。</p>
+</blockquote>
+<p><img src="media/15399334720944/15405458905092.jpg" alt="-w888"><br>当需要加载一个类时，当前加载器会查看自己是否已经加载此类，如果没有，则向上询问父加载器是否加载此类，如果没有，则依次向上询问是否加载此类型，直到顶级加载器Bootstrap。如果都没有加载过此类，则从顶级加载器开始尝试加载此类，如果无法加载，则依次向下尝试加载，如果都不能加载，则使用当前类加载器加载此类。</p>
+<blockquote>
+<p>低层次的类加载器是不能负载高层次类加载器加载的类</p>
+</blockquote>
+<blockquote>
+<p>Bootstrap加载的路劲是可以追加的，但是不建议修改或是删除原来加载路径。增加JVM启动参数<code>-Xbootclasspath/a:/Users/yuesheng/src</code></p>
+</blockquote>
+<blockquote>
+<p>可以增加<code>-XX:+TraceClassLoading</code>参数查看启动时加载了哪个jar包中的哪个类。在解决类冲突的时候常用。</p>
+</blockquote>
+<blockquote>
+<p>安全性、统一性</p>
+</blockquote>
+<h3 id="三、自定义类加载器"><a href="#三、自定义类加载器" class="headerlink" title="三、自定义类加载器"></a>三、自定义类加载器</h3><h4 id="1、使用场景"><a href="#1、使用场景" class="headerlink" title="1、使用场景"></a>1、使用场景</h4><ul>
+<li><strong>隔离加载类：</strong>在某些框架内进行中间件与应用模块隔离，把类加载到不同环境。比如，通过自定义的类加载器确保应用依赖的jar不会影响中间件依赖的jar包。</li>
+<li><strong>修改类加载方式：</strong>类的加载模型并非强制，除了Bootstrap外，其他的加载并非一定要引入，或者根据情况，在某个时间节点按需进行动态加载。</li>
+<li><strong>扩展加载源：</strong>比如从数据库、网络，甚至是电视机机顶盒中进行加载。</li>
+<li><strong>防止源码泄露：</strong>为了防止Java代码泄露，进行编译加密。那么类的加载器就需要自定义，还原加密的字节码</li>
+</ul>
+<h4 id="2、使用方法"><a href="#2、使用方法" class="headerlink" title="2、使用方法"></a>2、使用方法</h4><p>继承ClassLoader类，重写findClass()方法，调用defineClass()方法。</p>
 
       
 
@@ -264,7 +276,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/26/字节码/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/classloader/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -278,8 +290,17 @@
   
 <nav id="article-nav">
   
+    <a href="/2018/10/19/gc/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
   
-    <a href="/2018/10/19/对象实例化过程/" id="article-nav-older" class="article-nav-link-wrap">
+  
+    <a href="/2018/10/19/memory/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title"></div>
       <i class="icon-circle-right"></i>
     </a>

@@ -8,20 +8,17 @@
   <link rel="dns-prefetch" href="http://www.yuedaha.com">
   <title>yudaha</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
+  <meta name="description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="yudaha">
-<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/类的加载/index.html">
+<meta property="og:url" content="http://www.yuedaha.com/2018/10/19/Object instantiation process/index.html">
 <meta property="og:site_name" content="yudaha">
-<meta property="og:description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
+<meta property="og:description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/类的加载/media/15399334720944/15405435787016.jpg">
-<meta property="og:image" content="http://www.yuedaha.com/2018/10/19/类的加载/media/15399334720944/15405458905092.jpg">
-<meta property="og:updated_time" content="2018-11-01T08:03:37.214Z">
+<meta property="og:updated_time" content="2018-10-26T04:26:23.658Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="yudaha">
-<meta name="twitter:description" content="类的加载在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。 一、类的加载过程 Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又">
-<meta name="twitter:image" content="http://www.yuedaha.com/2018/10/19/类的加载/media/15399334720944/15405435787016.jpg">
+<meta name="twitter:description" content="对象实例化过程1、字节码角度分析对象创建过程通过javap -v -p命令查看对象实例化（Object demo = new Object()）过程：1234567891011121314151617public static void main(java.lang.String[]);  descriptor: ([Ljava/lang/String;)V  flags: ACC_PUBLIC,">
   
     <link rel="alternative" href="/atom.xml" title="yudaha" type="application/atom+xml">
   
@@ -153,50 +150,27 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-类的加载" class="article article-type-post " itemscope="" itemprop="blogPost">
+            <article id="post-Object instantiation process" class="article article-type-post " itemscope="" itemprop="blogPost">
   <div class="article-inner">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="类的加载"><a href="#类的加载" class="headerlink" title="类的加载"></a>类的加载</h1><p>在冯·诺伊曼定义的计算机模型中，任何程序都需要加载到内存中，才能和CPU交流。Java中，字节码class文件也需要加载到内存中，生成Class对象，才可以实例化对象。ClassLoader就是加载class文件的类，它是采用双亲委派加载模型加载class文件到内存。</p>
-<h3 id="一、类的加载过程"><a href="#一、类的加载过程" class="headerlink" title="一、类的加载过程"></a>一、类的加载过程</h3><p><img src="media/15399334720944/15405435787016.jpg" alt="-w705"></p>
-<p>Java的类加载模型分为三个步骤，Load（加载）、Link（链接）和Init（初始化）。其中Link又分为验证、准备和解析。</p>
+        <h1 id="对象实例化过程"><a href="#对象实例化过程" class="headerlink" title="对象实例化过程"></a>对象实例化过程</h1><h3 id="1、字节码角度分析对象创建过程"><a href="#1、字节码角度分析对象创建过程" class="headerlink" title="1、字节码角度分析对象创建过程"></a>1、字节码角度分析对象创建过程</h3><p>通过<code>javap -v -p</code>命令查看对象实例化（<code>Object demo = new Object()</code>）过程：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">  descriptor: ([Ljava/lang/String;)V</span><br><span class="line">  flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">  Code:</span><br><span class="line">    stack=<span class="number">2</span>, locals=<span class="number">2</span>, args_size=<span class="number">1</span></span><br><span class="line">       0: new           #2                  // class java/lang/Object</span><br><span class="line">       <span class="number">3</span>: dup</span><br><span class="line">       4: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</span><br><span class="line">       <span class="number">7</span>: astore_1</span><br><span class="line">       <span class="number">8</span>: <span class="keyword">return</span></span><br><span class="line">    LineNumberTable:</span><br><span class="line">      line <span class="number">13</span>: <span class="number">0</span></span><br><span class="line">      line <span class="number">14</span>: <span class="number">8</span></span><br><span class="line">    LocalVariableTable:</span><br><span class="line">      Start  Length  Slot  Name   Signature</span><br><span class="line">          <span class="number">0</span>       <span class="number">9</span>     <span class="number">0</span>  args   [Ljava/lang/String;</span><br><span class="line">          <span class="number">8</span>       <span class="number">1</span>     <span class="number">1</span>  demo   Ljava/lang/Object;</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li><strong>加载：</strong>读取类文件转化为二进制流，并转换为特殊的数据结构，初步校验cafe babe魔法字、常量池、文件长度、是否有父类等，然后创建对应的java.lang.Class实例。</li>
-<li><strong>链接：</strong>包括验证、准备和解析三个过程，验证是更加详细的校验，比如final是否合规，类型是否正确，静态变量是否合理等；准备阶段是给静态变量设置默认值，及零值。解析类与类之间相互引用的正确性，完成内存结构布局。</li>
-<li><strong>初始化：</strong>执行类的构造器<clinit>方法，如果赋值运算采用到其他类的静态方法来完成的，则会马上解析另一个类，在虚拟机栈中执行完毕后通过返回结果赋值。</clinit></li>
+<li><strong>new:</strong> 如果找不到Class对象，则进行类加载。类加载完成后，在堆内存中开辟内存空间，从Object开始到本类路劲上的所有属性都要分配内存（引用也是要占存储空间的，它是一个变量，占4个字节），分配结束后进行零值初始化。讲指向实例对象的引用变量压入虚拟机栈顶。</li>
+<li><strong>dup:</strong> 在栈顶复制改引用变量，这是栈顶会有两个指定堆内的实例对象的应用。如果在<init>方法内有参数，则要讲参数也压入操作栈。栈内相对底部的引用变量用于赋值，或者存储到局部变量表，相对顶部的引用变量是当做句柄来调用相关方法的。</init></li>
+<li><strong>invokespacial:</strong> 调用对象的实例方法，通过栈顶引用变量调用<init>方法。</init></li>
 </ul>
-<p>类加载过程是对.class字节码实例化成Class对象并进行相关初始化过程。在这个过程中，JVM会初始化继承树上所有未被初始化过程的父类，执行他们的静态代码块和静态变量的赋值操作。</p>
 <blockquote>
-<p>new和Class.newInstance()的区别：new是强类型校验，可以调用任何构造方法，在使用new的时候，这个类可以不需要被加载。newInstance()方法是弱类型校验，只能调用无参构造函数，如果不存在，则报InstantiationException，如果次构造方法没有访问权限，则报IllegalAccessException异常。JDK9中已经把newInstance()置为过时的方法，推荐采用Class.getDeclaredConstructor().newInstance()的方式。</p>
+<p><clinit>是类初始化执行的方法，<init>是对象初始化执行的方法。</init></clinit></p>
 </blockquote>
-<blockquote>
-<p>还可以通过Class的方法的方式来获取其他声明，例如注解、方法等。在修改private修饰的变量时，设置<code>setAccess(true)</code>即可修改。</p>
-</blockquote>
-<h3 id="二、双亲委派加载模型"><a href="#二、双亲委派加载模型" class="headerlink" title="二、双亲委派加载模型"></a>二、双亲委派加载模型</h3><p>jdk中类加载器分层级关系，最高一层加载器为Bootstrap，由JVM启动时创建，通常是操作系统本地代码实现，是最根基的类加载器，负责加载最核心的类，例如Object、System、String等；第二层在jdk9中，称为Platform ClassLoader（平台加载器），用于加载一些扩展的系统类，比如XML、加密、压缩相关的功能，JDK9之前的加载器为Extension ClassLoader；第三层为Application ClassLoader的应用类加载器，负责加载用户定义的CLASSPATH下面的类。</p>
-<blockquote>
-<p>第二层和第三层是使用java定义的。</p>
-</blockquote>
-<p><img src="media/15399334720944/15405458905092.jpg" alt="-w888"><br>当需要加载一个类时，当前加载器会查看自己是否已经加载此类，如果没有，则向上询问父加载器是否加载此类，如果没有，则依次向上询问是否加载此类型，直到顶级加载器Bootstrap。如果都没有加载过此类，则从顶级加载器开始尝试加载此类，如果无法加载，则依次向下尝试加载，如果都不能加载，则使用当前类加载器加载此类。</p>
-<blockquote>
-<p>低层次的类加载器是不能负载高层次类加载器加载的类</p>
-</blockquote>
-<blockquote>
-<p>Bootstrap加载的路劲是可以追加的，但是不建议修改或是删除原来加载路径。增加JVM启动参数<code>-Xbootclasspath/a:/Users/yuesheng/src</code></p>
-</blockquote>
-<blockquote>
-<p>可以增加<code>-XX:+TraceClassLoading</code>参数查看启动时加载了哪个jar包中的哪个类。在解决类冲突的时候常用。</p>
-</blockquote>
-<blockquote>
-<p>安全性、统一性</p>
-</blockquote>
-<h3 id="三、自定义类加载器"><a href="#三、自定义类加载器" class="headerlink" title="三、自定义类加载器"></a>三、自定义类加载器</h3><h4 id="1、使用场景"><a href="#1、使用场景" class="headerlink" title="1、使用场景"></a>1、使用场景</h4><ul>
-<li><strong>隔离加载类：</strong>在某些框架内进行中间件与应用模块隔离，把类加载到不同环境。比如，通过自定义的类加载器确保应用依赖的jar不会影响中间件依赖的jar包。</li>
-<li><strong>修改类加载方式：</strong>类的加载模型并非强制，除了Bootstrap外，其他的加载并非一定要引入，或者根据情况，在某个时间节点按需进行动态加载。</li>
-<li><strong>扩展加载源：</strong>比如从数据库、网络，甚至是电视机机顶盒中进行加载。</li>
-<li><strong>防止源码泄露：</strong>为了防止Java代码泄露，进行编译加密。那么类的加载器就需要自定义，还原加密的字节码</li>
+<h3 id="2、执行步骤角度来分析对象创建过程"><a href="#2、执行步骤角度来分析对象创建过程" class="headerlink" title="2、执行步骤角度来分析对象创建过程"></a>2、执行步骤角度来分析对象创建过程</h3><ul>
+<li><strong>确认元信息是否存在。</strong>当JVM接到new指令时，会从Metaspace内查找需要创建的元信息是否存在。如果不存，则在双亲委派模式下，通过当前类加载器以ClassLoader+包名+类名为key，进行查找对应的.class文件。如果找不到，则报ClassNotFoundException；如果找到则进行类加载，生成Class对象。</li>
+<li><strong>分配对象的内存。</strong>首先会计算对象占空间大小，如果实例的成员变量是引用对象，则只需要分配引用变量空间即可，即4个字节大小，之后在堆中划分一块内存给新的对象。分配内存空间时需要采用同步操作，可以通过CAS失败重试、区域加锁等方式来确保分配内存操作的原子性。</li>
+<li><strong>设定默认值。</strong>给实例对象的成员变量设置默认值，根据类型设置零值。</li>
+<li><strong>设置对象头。</strong>这是新对象的hash值、GC信息、锁信息、对象所有的元信息等。这个过程取决于JVM实现。</li>
+<li><strong>执行init方法。</strong>初始化成员变量，执行实例化代码，调用对象的构造方法，并把堆内存中指向对象的首地址赋值给引用变量。</li>
 </ul>
-<h4 id="2、使用方法"><a href="#2、使用方法" class="headerlink" title="2、使用方法"></a>2、使用方法</h4><p>继承ClassLoader类，重写findClass()方法，调用defineClass()方法。</p>
 
       
 
@@ -276,7 +250,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/类的加载/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.yuedaha.com/2018/10/19/Object instantiation process/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -290,7 +264,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/19/垃圾回收（GC）/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/26/bytecode/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -300,7 +274,7 @@
     </a>
   
   
-    <a href="/2018/10/19/内存布局/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/10/19/gc/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title"></div>
       <i class="icon-circle-right"></i>
     </a>
